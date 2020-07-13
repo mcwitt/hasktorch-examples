@@ -18,24 +18,24 @@
 }:
 with pkgs;
 let
-  ghc = hasktorchSkeletonHaskellPackages.ghcWithPackages (_: []);
-
-  buildInputs = [
-    git # needed so that stack can get extra-deps from github
-    torch
-    zlib
-  ];
+  ghc = hasktorchSkeletonHaskellPackages.ghcWithPackages (ps: []);
 
   stack-shell = haskell.lib.buildStackProject rec {
     inherit ghc;
 
     name = "hasktorch-skeleton-stack-dev-shell";
+
+    # ghc = pkgs.ghc;
     
     extraArgs = [
       "--extra-include-dirs=${torch}/include/torch/csrc/api/include"
     ];
-
-    inherit buildInputs;
+    
+    buildInputs = [
+      git # needed so that stack can get extra-deps from github
+      torch
+      zlib
+    ];
 
     phases = ["nobuildPhase"];
     nobuildPhase = "echo '${lib.concatStringsSep "\n" ([ghc] ++ buildInputs)}' > $out";
